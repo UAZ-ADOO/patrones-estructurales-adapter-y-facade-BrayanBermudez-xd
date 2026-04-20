@@ -23,15 +23,17 @@ class StripeLegacy:
         print(f"[Stripe] Tarjeta cobrada por la cantidad de ${total_dollars}")
 
 
+# ✅ ADAPTER
 class StripeAdapter(InterfazPago):
     def __init__(self, stripe_legacy: StripeLegacy) -> None:
         self.stripe = stripe_legacy
 
     def procesar_pago(self, cantidad: float) -> None:
-        # TODO: adaptar la llamada de la interfaz estandar al metodo legacy.
-        raise NotImplementedError("Implementa el Adapter para StripeLegacy.")
+        # Adaptamos el método esperado al método legacy 
+        self.stripe.charge_credit_card(cantidad)
 
 
+# ✅ FACADE (CLASE SEPARADA)
 class CompraFacade:
     def __init__(
         self,
@@ -44,8 +46,20 @@ class CompraFacade:
         self.pago = pago
 
     def realizar_compra(self, producto: str, cantidad: float) -> None:
-        # TODO: verificar stock, procesar pago y organizar envio.
-        raise NotImplementedError("Implementa la Fachada de compra.")
+        print("----INICIANDO COMPRA----")
+
+        # verificar stock 
+        if not self.inventario.verificar_stock(producto):
+            print("No hay stock disponible")
+            return
+
+        # procesar pago 
+        self.pago.procesar_pago(cantidad)
+
+        # organizar envio
+        self.envio.organizar_envio(producto)
+
+        print("----COMPRA FINALIZADA----")
 
 
 def main() -> None:
